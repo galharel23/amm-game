@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Dict
-from uuid import UUID
+from typing import Optional
+from uuid import UUID, uuid4
 
-from .models import LiquidityPool
+from sqlalchemy.orm import Session
+
+from app.models import Currency, Pool
 
 
 class PoolNotFoundError(Exception):
@@ -13,30 +15,41 @@ class PoolNotFoundError(Exception):
     pass
 
 
-class PoolRepository:
-    """
-    Simple in-memory repository for LiquidityPool objects.
+def get_or_create_currency(db: Session, symbol: str, name: Optional[str] = None) -> Currency:
+    symbol = symbol.upper()
+    cur = db.query(Currency).filter(Currency.symbol == symbol).one_or_none()
+    if cur:
+        return cur
 
-    This is the place you would later swap out for a real database
-    (e.g., SQLAlchemy, Prisma, etc.).
-    """
-
-    def __init__(self) -> None:
-        self._pools: Dict[UUID, LiquidityPool] = {}
-
-    # ---- CRUD-like operations ---- #
-
-    def create_pool(self, x_init: float, y_init: float) -> LiquidityPool:
-        pool = LiquidityPool(x_reserve=x_init, y_reserve=y_init)
-        self._pools[pool.id] = pool
-        return pool
-
-    def get_pool(self, pool_id: UUID) -> LiquidityPool:
-        try:
-            return self._pools[pool_id]
-        except KeyError:
-            raise PoolNotFoundError(f"Pool with id {pool_id} not found.")
+    cur = Currency(symbol=symbol, name=(name or symbol), decimals=18)
+    db.add(cur)
+    db.flush()
+    return cur
 
 
-# Global repository instance (for this small project)
-pool_repository = PoolRepository()
+def create_pool(db: Session, x_init: float, y_init: float, currency_x: str = "XTK", currency_y: str = "YTK") -> Pool:
+    """Create a Pool in the database. Ensures currencies exist."""
+    # ensure currencies exist
+    cx = get_or_create_currency(db, currency_x)
+    cy = get_or_create_currency(db, currency_y)
+
+    pool = Pool(
+        id=uuid4(),
+        currency_x_id=cx.id,
+        currency_y_id=cy.id,
+        x_reserve=x_init,
+        y_reserve=y_init,
+        K=x_init * y_init,
+        is_active=True,
+    )
+    db.add(pool)
+    db.commit()
+    db.refresh(pool)
+    return pool
+
+
+def get_pool(db: Session, pool_id: UUID) -> Pool:
+    pool = db.query(Pool).filter(Pool.id == pool_id).one_or_none()
+    if pool is None:
+        raise PoolNotFoundError(f"Pool with id {pool_id} not found.")
+    return pool
