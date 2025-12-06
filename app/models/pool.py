@@ -12,32 +12,49 @@ from sqlalchemy.orm import relationship
 from .base import Base
 
 
-
 class Pool(Base):
     """
     Represents a constant-product AMM pool with two assets X and Y.
-    
+
     Invariant:
         x_reserve * y_reserve = K (constant)
     """
+
     __tablename__ = "pools"
     __table_args__ = (
         UniqueConstraint("currency_x_id", "currency_y_id", name="uq_pool_currencies"),
     )
 
     id = Column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
-    currency_x_id = Column(PG_UUID(as_uuid=True), ForeignKey("currencies.id"), nullable=False, index=True)
-    currency_y_id = Column(PG_UUID(as_uuid=True), ForeignKey("currencies.id"), nullable=False, index=True)
+    currency_x_id = Column(
+        PG_UUID(as_uuid=True), ForeignKey("currencies.id"), nullable=False, index=True
+    )
+    currency_y_id = Column(
+        PG_UUID(as_uuid=True), ForeignKey("currencies.id"), nullable=False, index=True
+    )
     x_reserve = Column(Numeric(precision=30, scale=8), nullable=False, default=0)
     y_reserve = Column(Numeric(precision=30, scale=8), nullable=False, default=0)
     K = Column(Numeric(precision=60, scale=16), nullable=False, default=0)
     is_active = Column(Boolean, nullable=False, default=True)
-    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    created_at = Column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+    )
+    updated_at = Column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
 
     # Relationships
-    currency_x = relationship("Currency", foreign_keys=[currency_x_id], back_populates="pools_as_x")
-    currency_y = relationship("Currency", foreign_keys=[currency_y_id], back_populates="pools_as_y")
+    currency_x = relationship(
+        "Currency", foreign_keys=[currency_x_id], back_populates="pools_as_x"
+    )
+    currency_y = relationship(
+        "Currency", foreign_keys=[currency_y_id], back_populates="pools_as_y"
+    )
     transactions = relationship("Transaction", back_populates="pool")
 
     def price_x_in_y(self) -> Decimal:
@@ -55,7 +72,7 @@ class Pool(Base):
     def swap_x_for_y(self, dx: Decimal) -> Decimal:
         """
         User sends dx units of X into the pool and receives Δy units of Y.
-        
+
         :param dx: Amount of X sent to the pool (must be > 0).
         :return: Amount of Y the user receives.
         """
@@ -75,7 +92,7 @@ class Pool(Base):
     def swap_y_for_x(self, dy: Decimal) -> Decimal:
         """
         User sends dy units of Y into the pool and receives Δx units of X.
-        
+
         :param dy: Amount of Y sent to the pool (must be > 0).
         :return: Amount of X the user receives.
         """
@@ -96,7 +113,7 @@ class Pool(Base):
         """Add liquidity to the pool (management function)."""
         if dx < 0 or dy < 0:
             raise ValueError("Amounts must be non-negative.")
-        
+
         self.x_reserve += dx
         self.y_reserve += dy
         self.K = self.x_reserve * self.y_reserve
@@ -108,7 +125,7 @@ class Pool(Base):
             raise ValueError("Amounts must be non-negative.")
         if self.x_reserve < dx or self.y_reserve < dy:
             raise ValueError("Insufficient reserves to remove.")
-        
+
         self.x_reserve -= dx
         self.y_reserve -= dy
         self.K = self.x_reserve * self.y_reserve
