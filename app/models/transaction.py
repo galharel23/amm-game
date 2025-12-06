@@ -3,6 +3,7 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 
+# SQLAlchemy imports
 from sqlalchemy import Column, DateTime, Enum as SQLEnum, ForeignKey, Numeric
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship
