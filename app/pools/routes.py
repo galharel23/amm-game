@@ -96,7 +96,7 @@ def swap_x_for_y(pool_id: UUID, req: SwapXForYRequest, db: Session = Depends(get
         raise HTTPException(status_code=404, detail=str(e))
 
     try:
-        amount_out = pool.swap_x_for_y(req.amount_in)
+        amount_out = pool.swap_x_for_y(Decimal(str(req.amount_in)))
     except ValueError as e:
         # e.g., amount_in <= 0
         raise HTTPException(status_code=400, detail=str(e))
@@ -127,7 +127,7 @@ def swap_y_for_x(pool_id: UUID, req: SwapYForXRequest, db: Session = Depends(get
         raise HTTPException(status_code=404, detail=str(e))
 
     try:
-        amount_out = pool.swap_y_for_x(req.amount_in)
+        amount_out = pool.swap_y_for_x(Decimal(str(req.amount_in)))
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
