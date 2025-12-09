@@ -18,8 +18,9 @@ class Currency(Base):
 
     id = Column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
     symbol = Column(String(10), unique=True, nullable=False, index=True)
-    name = Column(String(100), nullable=False)
+    name = Column(String(100), unique=True, nullable=False)
     decimals = Column(Numeric(precision=3, scale=0), nullable=False, default=18)
+    image_url = Column(String(500), nullable=True)
     created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
 
     # Relationships
