@@ -1,35 +1,26 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+// import { Home } from './pages/Home';
+// import { CreatePool } from './pages/CreatePool';
+// import { PoolsList } from './pages/PoolsList';
+// import { Swap } from './pages/Swap';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    // <BrowserRouter>
+    //   <Routes>
+    //     <Route path="/" element={<Home />} />
+    //     <Route path="/create-pool" element={<CreatePool />} />
+    //     <Route path="/pools" element={<PoolsList />} />
+    //     <Route path="/swap/:poolId" element={<Swap />} />
+    //     <Route path="*" element={<Navigate to="/" />} />
+    //   </Routes>
+    // </BrowserRouter>
+    <div className="flex items-center justify-center h-screen">
+      <h1 className="text-3xl font-bold underline">
+        Frontend is under maintenance. Please check back later.
+      </h1>
+    </div>
+  );
 }
 
-export default App
+export default App;
