@@ -1,34 +1,20 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 export function Home() {
-  const navigate = useNavigate();
-
+  const nav = useNavigate();
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center px-4">
-      <div className="max-w-md w-full space-y-8 text-center">
-        <div>
-          <h1 className="text-4xl font-bold text-gray-900">AMM Game</h1>
-          <p className="mt-2 text-gray-600">Swap tokens instantly</p>
-        </div>
+    <div className="container center">
+      <div className="card" style={{ width: "100%", textAlign: "center" }}>
+        <div className="huge">AMM Game</div>
+        <p className="note">Simple AMM UI — create or use a pool</p>
 
-        <div className="space-y-4">
-          <button
-            onClick={() => navigate('/create-pool')}
-            className="w-full py-4 px-6 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105"
-          >
+        <div style={{ marginTop: 20 }} className="row center">
+          <button className="btn" onClick={() => nav("/create-pool")}>
             ➕ Create a Pool
           </button>
-
-          <button
-            onClick={() => navigate('/pools')}
-            className="w-full py-4 px-6 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105"
-          >
+          <button className="btn secondary" onClick={() => nav("/pools")}>
             🔄 Use a Pool
           </button>
-        </div>
-
-        <div className="text-sm text-gray-500 mt-12">
-          <p>Constant-product AMM</p>
         </div>
       </div>
     </div>
