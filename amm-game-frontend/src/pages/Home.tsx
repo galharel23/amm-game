@@ -33,7 +33,7 @@ export function Home() {
         <div className="huge">AMM Game</div>
 
         <p className="note" style={{ marginTop: 10 }}>
-          Simple AMM UI — create or use a liquidity pool connected to your backend.
+          Simple AMM Game — create or use a liquidity pool.
         </p>
 
         {/* Live backend stats */}

@@ -174,34 +174,42 @@ export function PoolsList() {
               {visiblePools.map((p) => (
                 <div
                   key={p.id}
-                  className="subcard"
+                  className="subcard pool-card"
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
                   }}
                 >
-                  <div>
-                    <div style={{ fontWeight: 800 }}>
+                  <div className="pool-info">
+                    <div className="pool-title">
                       {p.currency_x_symbol}/{p.currency_y_symbol}
                     </div>
-                    <div className="small">
+                    <div className="pool-subtitle">
                       {p.currency_x_name} • {p.currency_y_name}
                     </div>
-                    <div className="small" style={{ marginTop: 4 }}>
-                      {p.currency_x_symbol} reserve: {p.x_reserve.toFixed(2)} •{" "}
-                      {p.currency_y_symbol} reserve: {p.y_reserve.toFixed(2)}
+
+                    <div className="pool-reserves">
+                      <div className="small reserve-x">
+                        {p.currency_x_symbol} reserve: {p.x_reserve.toFixed(2)}
+                      </div>
+                      <div className="small reserve-y">
+                        {p.currency_y_symbol} reserve: {p.y_reserve.toFixed(2)}
+                      </div>
                     </div>
+
                     <div className="small">
                       Price {p.currency_x_symbol}→{p.currency_y_symbol}:{" "}
                       {p.price_x_in_y.toFixed(6)}
                     </div>
                   </div>
+
                   <button
-                    className="btn secondary"
+                    className="pool-use-btn"
                     onClick={() => nav(`/swap/${p.id}`)}
                   >
-                    Use →
+                    <span className="pool-use-text">Use</span>
+                    <span className="pool-use-arrow">→</span>
                   </button>
                 </div>
               ))}

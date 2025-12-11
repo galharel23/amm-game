@@ -44,6 +44,8 @@ export const poolAPI = {
   getPool: (id: string) => apiClient.get<Pool>(`/pools/${id}`),
   createPool: (cx: string, cy: string, x_init: number, y_init: number) =>
     apiClient.post<Pool>("/pools/", { currency_x_id: cx, currency_y_id: cy, x_init, y_init }),
+  createCurrency: (symbol: string, name: string, image_url?: string | null) =>
+    apiClient.post<Currency>("/pools/currencies/", { symbol, name, image_url: image_url ?? null }),
   swapXForY: (poolId: string, amount_in: number, min_amount_out = 0) =>
     apiClient.post(`/pools/${poolId}/swap/x-for-y`, { amount_in, min_amount_out }),
   swapYForX: (poolId: string, amount_in: number, min_amount_out = 0) =>
