@@ -17,8 +17,16 @@ export type Currency = {
   created_at: string;
 };
 
-export type Pool = {
+export interface Pool {
   id: string;
+  // NEW: currency metadata from backend
+  currency_x_id: string;
+  currency_y_id: string;
+  currency_x_symbol: string;
+  currency_y_symbol: string;
+  currency_x_name: string;
+  currency_y_name: string;
+
   x_reserve: number;
   y_reserve: number;
   K: number;
@@ -26,7 +34,7 @@ export type Pool = {
   price_y_in_x: number;
   is_active: boolean;
   created_at: string;
-};
+}
 
 export const poolAPI = {
   getCurrencies: (skip = 0, limit = 100) =>

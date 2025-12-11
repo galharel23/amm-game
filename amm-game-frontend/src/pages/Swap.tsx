@@ -10,23 +10,32 @@ export function Swap() {
   const [amountIn, setAmountIn] = useState("");
   const [amountOut, setAmountOut] = useState(0);
   const [direction, setDirection] = useState<"x-to-y" | "y-to-x">("x-to-y");
-  const [slippage, setSlippage] = useState(0.5);
   const [status, setStatus] = useState<string>("");
 
   useEffect(() => {
-    if (poolId) fetchPool();
+    if (!poolId) return;
+    (async () => {
+      setLoading(true);
+      try {
+        const r = await poolAPI.getPool(poolId);
+        setPool(r.data);
+      } catch {
+        setPool(null);
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, [poolId]);
 
-  const fetchPool = async () => {
-    setLoading(true);
-    try {
-      const r = await poolAPI.getPool(poolId!);
-      setPool(r.data);
-    } catch (e) {
-      setPool(null);
-    }
-    setLoading(false);
-  };
+  // Derived symbols for UI
+  const sellSymbol =
+    direction === "x-to-y"
+      ? pool?.currency_x_symbol ?? "X"
+      : pool?.currency_y_symbol ?? "Y";
+  const buySymbol =
+    direction === "x-to-y"
+      ? pool?.currency_y_symbol ?? "Y"
+      : pool?.currency_x_symbol ?? "X";
 
   useEffect(() => {
     if (!pool) {
@@ -51,19 +60,24 @@ export function Swap() {
 
   const doSwap = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!poolId) return;
     setStatus("");
     try {
-      if (!poolId) return;
       const amt = parseFloat(amountIn);
-      const min_out = amountOut * (1 - slippage / 100);
-      if (direction === "x-to-y") {
-        await poolAPI.swapXForY(poolId, amt, min_out);
-      } else {
-        await poolAPI.swapYForX(poolId, amt, min_out);
+      if (!amt || amt <= 0) {
+        setStatus("Enter a positive amount");
+        return;
       }
+
+      // No slippage UI: always send min_amount_out = 0 (or use default)
+      if (direction === "x-to-y") {
+        await poolAPI.swapXForY(poolId, amt, 0);
+      } else {
+        await poolAPI.swapYForX(poolId, amt, 0);
+      }
+
       setStatus("Swap executed");
       setAmountIn("");
-      fetchPool();
     } catch (err: any) {
       setStatus(err?.response?.data?.detail?.detail || "Swap failed");
     }
@@ -72,7 +86,7 @@ export function Swap() {
   if (loading)
     return (
       <div className="container center">
-        <div className="card">Loading...</div>
+        <div className="card">Loading pool…</div>
       </div>
     );
   if (!pool)
@@ -83,72 +97,62 @@ export function Swap() {
     );
 
   return (
-    <div className="container">
-      <div className="card">
+    <div className="container center">
+      <div className="card" style={{ width: "100%", maxWidth: 720 }}>
         <button className="btn secondary" onClick={() => nav("/pools")}>
           ← Back
         </button>
-        <h3 style={{ marginTop: 8 }}>Swap</h3>
-        <p className="small">Pool price X→Y: {pool.price_x_in_y.toFixed(6)}</p>
+        <h2 style={{ marginTop: 12, fontSize: "1.8rem" }}>
+          Swap {pool.currency_x_symbol}/{pool.currency_y_symbol}
+        </h2>
+        <p className="small" style={{ marginBottom: 16 }}>
+          Current price {pool.currency_x_symbol}→{pool.currency_y_symbol}:{" "}
+          {pool.price_x_in_y.toFixed(6)}
+        </p>
 
-        <form
-          onSubmit={doSwap}
-          style={{ display: "grid", gap: 10, marginTop: 10 }}
-        >
+        <form onSubmit={doSwap} style={{ display: "grid", gap: 16 }}>
           <div>
-            <label className="small">Sell amount</label>
+            <label className="small">
+              Sell amount ({sellSymbol})
+            </label>
             <input
               className="input"
               value={amountIn}
               onChange={(e) => setAmountIn(e.target.value)}
+              placeholder="0.0"
             />
           </div>
 
-          <div className="center">
+          <div style={{ textAlign: "center" }}>
             <button
               type="button"
-              className="btn"
+              className="btn secondary"
               onClick={() =>
                 setDirection(direction === "x-to-y" ? "y-to-x" : "x-to-y")
               }
             >
-              ⇅ Switch
+              ⇅ Switch direction
             </button>
           </div>
 
           <div>
-            <label className="small">Receive (estimated)</label>
-            <input
-              className="input"
-              value={amountOut.toFixed(8)}
-              readOnly
-            />
+            <label className="small">
+              Receive (est.) ({buySymbol})
+            </label>
+            <input className="input" value={amountOut.toFixed(8)} readOnly />
           </div>
 
-          <div>
-            <label className="small">Slippage ({slippage}%)</label>
-            <input
-              type="range"
-              min={0}
-              max={5}
-              step={0.1}
-              value={slippage}
-              onChange={(e) => setSlippage(parseFloat(e.target.value))}
-            />
-          </div>
-
+          {/* Status only, no slippage controls */}
           {status && (
             <div
               className="small"
-              style={{
-                color: status.includes("failed") ? "red" : "green",
-              }}
+              style={{ color: status.includes("failed") ? "red" : "green" }}
             >
               {status}
             </div>
           )}
 
-          <button className="btn" type="submit">
+          <button type="submit" className="btn">
             Swap
           </button>
         </form>

@@ -46,13 +46,16 @@ export function CreatePool() {
   };
 
   return (
-    <div className="container">
-      <div className="card">
-        <h2>Create Pool</h2>
+    <div className="container center">
+      <div className="card" style={{ width: "100%", maxWidth: 720 }}>
+        <h2 style={{ fontSize: "1.8rem", marginBottom: 8 }}>Create Pool</h2>
+        <p className="small" style={{ marginBottom: 20 }}>
+          Select two currencies and set their initial reserves.
+        </p>
         {loading ? (
           <p className="small">Loading currencies...</p>
         ) : (
-          <form onSubmit={submit} style={{ display: "grid", gap: 10 }}>
+          <form onSubmit={submit} style={{ display: "grid", gap: 16 }}>
             <div>
               <label className="small">Currency X</label>
               <select
@@ -107,7 +110,7 @@ export function CreatePool() {
 
             {err && <div style={{ color: "#a00" }}>{err}</div>}
 
-            <div style={{ display: "flex", gap: 10 }}>
+            <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
               <button type="submit" className="btn">
                 Create Pool
               </button>
