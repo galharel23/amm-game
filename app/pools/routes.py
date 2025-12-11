@@ -53,6 +53,14 @@ def pool_to_state(pool) -> PoolState:
 
     return PoolState(
         id=pool.id,
+        # NEW: currency metadata from relationships
+        currency_x_id=pool.currency_x_id,
+        currency_y_id=pool.currency_y_id,
+        currency_x_symbol=pool.currency_x.symbol,
+        currency_y_symbol=pool.currency_y.symbol,
+        currency_x_name=pool.currency_x.name,
+        currency_y_name=pool.currency_y.name,
+
         x_reserve=to_float(pool.x_reserve),
         y_reserve=to_float(pool.y_reserve),
         K=to_float(pool.K),

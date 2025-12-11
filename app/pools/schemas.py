@@ -50,6 +50,14 @@ class PoolState(BaseModel):
     Representation of a liquidity pool returned by the API.
     """
     id: UUID
+    # NEW: currency metadata
+    currency_x_id: UUID
+    currency_y_id: UUID
+    currency_x_symbol: str = Field(..., description="Symbol of currency X")
+    currency_y_symbol: str = Field(..., description="Symbol of currency Y")
+    currency_x_name: str = Field(..., description="Name of currency X")
+    currency_y_name: str = Field(..., description="Name of currency Y")
+
     x_reserve: float = Field(..., description="Current reserve of token X")
     y_reserve: float = Field(..., description="Current reserve of token Y")
     K: float = Field(..., description="Constant product (x_reserve * y_reserve)")
