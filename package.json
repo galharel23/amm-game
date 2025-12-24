@@ -1,9 +1,0 @@
-{
-  "name": "amm-game-workspace",
-  "private": true,
-  "version": "0.0.0",
-  "scripts": {
-    "frontend": "cd amm-game-frontend && npm install && npm run dev",
-    "dev": "npm run frontend"
-  }
-}
