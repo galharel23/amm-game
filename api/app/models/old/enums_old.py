@@ -3,12 +3,6 @@
 from enum import Enum
 
 
-class UserType(str, Enum):
-    """Type of user"""
-    ADMIN = "ADMIN"
-    PLAYER = "PLAYER"
-
-
 class TransactionType(str, Enum):
     """Types of transactions in the pool."""
     SWAP = "SWAP"

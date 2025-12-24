@@ -6,7 +6,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import init_db
-from app.pools.routes import router as pools_router
 
 app = FastAPI(
     title="AMM Game Backend",
@@ -37,9 +36,6 @@ async def startup():
     except Exception as e:  # pragma: no cover - operational/runtime issue
         # Avoid failing app startup due to DB connectivity issues.
         print(f"init_db() failed: {e}")
-
-# Mount feature routers
-app.include_router(pools_router, prefix="/pools", tags=["pools"])
 
 @app.get("/health")
 async def health_check():
